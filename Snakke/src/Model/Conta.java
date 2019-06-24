@@ -36,12 +36,12 @@ public class Conta implements Serializable {
         this.senha = senha;
         this.telefone = telefone;
         this.usuario = new Usuario(nome, true, usuario);
-        testeContatos();
+//        testeContatos();
         
     }
 
     public Conta() {
-        testeContatos();
+//        testeContatos();
     }
 
     public Usuario getUsuario() {

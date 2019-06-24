@@ -9,6 +9,7 @@ import Model.Conta;
 import Model.Mensagem;
 import Model.Servidor;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ControllerLogin implements ObservadoLogin {
     Conta conta;
     
     public ControllerLogin() {
-//        servidor = Servidor.getInstance();
+        servidor = Servidor.getInstance();
     
         
     }
@@ -55,32 +56,38 @@ public class ControllerLogin implements ObservadoLogin {
     }
     
     public boolean login(String usuario, String senha) {
-        
-        testeLogin();
-//        try {
-//            if (servidor.conectar()) {
-//                conexao = servidor.getConexao();
-//            }
-//            PrintWriter out = null;
-//            out = new PrintWriter(conexao.getOutputStream(), true);
-//            out.println("login,," + usuario + ",," + senha);
-//            out.close();
-//            servidor.desconectar();
-//            //espera receber dados
-//            //se deu certo
-//            if (servidor.receberConexao()) {
-//                ObjectInputStream object = new ObjectInputStream(servidor.getConexao().getInputStream());
-//                conta = (Conta) object.readObject();
-//                object.close();
-//                servidor.desconectar();
-//            } else {//se não deu
-//                return false;
-//            }
-//        } catch (IOException ex) {
-//            return false;
-//        } catch (ClassNotFoundException ex) {
-//            return false;
-//        }
+//        testeLogin();
+        try {
+            if (servidor.conectar()) {
+                conexao = servidor.getConexao();
+            }
+            
+            if (servidor.conectar()) {
+                conexao = servidor.getConexao();
+            }
+            ObjectOutputStream oos = new ObjectOutputStream(conexao.getOutputStream());
+            ///ver como ENVIAR UM OBJETO
+            Mensagem msg = new Mensagem();
+            msg.setAssunto(3);
+            msg.getConta().getUsuario().setUsuario(usuario);
+            msg.getConta().setSenha(senha);
+            oos.writeObject(msg);
+            oos.close();
+            //espera receber dados
+            //se deu certo
+            if (servidor.receberConexao()) {
+                ObjectInputStream object = new ObjectInputStream(servidor.getConexao().getInputStream());
+                conta = (Conta) object.readObject();
+                object.close();
+                servidor.desconectar();
+            } else {//se não deu
+                return false;
+            }
+        } catch (IOException ex) {
+            return false;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
         return true;
     }
     
